@@ -1,0 +1,5 @@
+# API routes go to serverless functions
+/api/* /.netlify/functions/server 200
+
+# SPA fallback - serve React app for all other routes
+/* /index.html 200

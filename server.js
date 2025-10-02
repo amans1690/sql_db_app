@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000; // Changed to 3000 to match React default
 
+// Detect if running in serverless environment
+const isServerless = process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -152,18 +155,20 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 CSV Query Application Server running on port ${PORT}`);
-  console.log(`📁 Serving CSV files from: ${path.join(__dirname, 'example_csv')}`);
-  console.log(`🌐 Application available at: http://localhost:${PORT}`);
-  console.log(`📊 API endpoints available at: http://localhost:${PORT}/api/`);
-  console.log(`📊 Available endpoints:`);
-  console.log(`   GET /api/tables - List all available tables`);
-  console.log(`   GET /api/schema/:table - Get table structure and sample data`);
-  console.log(`   GET /api/csv/:table - Download CSV file for specific table`);
-  console.log(`   GET /api/health - Server health check`);
-  console.log(`🎯 React app served from: ${path.join(__dirname, 'build')}`);
-});
+// Start server only if not in serverless environment
+if (!isServerless) {
+  app.listen(PORT, () => {
+    console.log(`🚀 CSV Query Application Server running on port ${PORT}`);
+    console.log(`📁 Serving CSV files from: ${path.join(__dirname, 'example_csv')}`);
+    console.log(`🌐 Application available at: http://localhost:${PORT}`);
+    console.log(`📊 API endpoints available at: http://localhost:${PORT}/api/`);
+    console.log(`📊 Available endpoints:`);
+    console.log(`   GET /api/tables - List all available tables`);
+    console.log(`   GET /api/schema/:table - Get table structure and sample data`);
+    console.log(`   GET /api/csv/:table - Download CSV file for specific table`);
+    console.log(`   GET /api/health - Server health check`);
+    console.log(`🎯 React app served from: ${path.join(__dirname, 'build')}`);
+  });
+}
 
 module.exports = app;
